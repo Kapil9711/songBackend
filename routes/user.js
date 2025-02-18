@@ -16,7 +16,7 @@ router.route("/").get(isAuthenticatedUser, async (req, res, next) => {
 // create user => /user
 router.route("/").post(
   catchAsyncError(async (req, res, next) => {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
     const isExist = await User.findOne({ email });
     if (isExist) return next(new CustomError(400, "User Already Exist"));
     const user = await User.create(req.body);

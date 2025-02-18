@@ -18,21 +18,21 @@ router.route("/home-page").get(
     const hindiPromise = axios.get(hindiUrl);
     const punjabiPromise = axios.get(punjabiUrl);
 
-    try {
-      const cacheData = myCache.get("trendings");
-      if (cacheData) {
-        const { haryanvi, punjabi, hindi } = JSON.parse(cacheData);
-        return res.status(200).json({
-          success: true,
-          message: "Home page Data",
-          hindi,
-          haryanvi,
-          punjabi,
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   const cacheData = myCache.get("trendings");
+    //   if (cacheData) {
+    //     const { haryanvi, punjabi, hindi } = JSON.parse(cacheData);
+    //     return res.status(200).json({
+    //       success: true,
+    //       message: "Home page Data",
+    //       hindi,
+    //       haryanvi,
+    //       punjabi,
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
 
     const [haryanviData, hindiData, punjabiData] = await Promise.allSettled([
       haryavniPromise,
@@ -56,12 +56,12 @@ router.route("/home-page").get(
       punjabi = songs;
     }
 
-    let trendings = { haryanvi, hindi, punjabi };
-    try {
-      myCache.set("trendings", JSON.stringify(trendings));
-    } catch (error) {
-      console.log("error", error);
-    }
+    // let trendings = { haryanvi, hindi, punjabi };
+    // try {
+    //   myCache.set("trendings", JSON.stringify(trendings));
+    // } catch (error) {
+    //   console.log("error", error);
+    // }
 
     res.status(200).json({
       success: true,
