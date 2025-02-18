@@ -1,7 +1,7 @@
-import jwt from "jwt";
+import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import catchAsyncErrors from "./catchAsyncError.js";
-import ErrorHandler from "./gloablErrorHandler.js";
+import CustomError from "../utils/customError.js";
 
 // Check if the user is authenticated or not
 export const isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
@@ -14,7 +14,7 @@ export const isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new ErrorHandler("Login first to access this resource.", 401));
+    return next(new CustomError(401, "Login first to access this resource."));
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -28,9 +28,9 @@ export const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
-        new ErrorHandler(
-          `Role(${req.user.role}) is not allowed to access this resource.`,
-          403
+        new CustomError(
+          403,
+          `Role(${req.user.role}) is not allowed to access this resource.`
         )
       );
     }

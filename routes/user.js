@@ -2,10 +2,16 @@ import { Router } from "express";
 import catchAsyncError from "../middlewares/catchAsyncError.js";
 import User from "../models/user.js";
 import CustomError from "../utils/customError.js";
-import { json } from "stream/consumers";
+import { isAuthenticatedUser } from "../middlewares/auth.js";
 const router = Router();
 
-router.route("/").get(async (req, res, next) => {});
+router.route("/").get(isAuthenticatedUser, async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+  if (!user) return next(new CustomError(404, "User Not Found"));
+  res
+    .status(200)
+    .json({ success: true, message: "User found Successfully", user });
+});
 
 // create user => /user
 router.route("/").post(
@@ -31,13 +37,45 @@ router.route("/login").post(
       return next(new CustomError(400, "UserName or Password Incorrect"));
     }
     const token = isExist.getJwtToken();
-    return res
-      .status(200)
-      .json({ success: true, message: "Login successfull", token });
+    return res.status(200).json({
+      success: true,
+      message: "Login successfull",
+      token,
+      user: isExist,
+    });
   })
 );
 
-router.route("/").put(async (req, res, next) => {});
+router.route("/").put(isAuthenticatedUser, async (req, res, next) => {
+  const {
+    songQuality,
+    downloadQuality,
+    imageQuality,
+    isFavouritePublic,
+    numberOfSongLoad,
+  } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) return next(new CustomError(400, "User Not Found"));
+
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    {
+      songQuality,
+      downloadQuality,
+      imageQuality,
+      isFavouritePublic,
+      numberOfSongLoad,
+    },
+    { new: true }
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "User Updated Successfully",
+    user: updatedUser,
+  });
+});
 
 router.route("/").delete(async (req, res, next) => {});
 
