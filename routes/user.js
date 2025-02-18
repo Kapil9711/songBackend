@@ -27,9 +27,9 @@ router.route("/").post(
 // login user => /user/login
 router.route("/login").post(
   catchAsyncError(async (req, res, next) => {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
     const isExist = await User.findOne({
-      $or: [{ username: username }, { email: email }],
+      $or: [{ name: name }, { email: email }],
     });
     if (!isExist) return next(new CustomError(404, "User not Found"));
     const isPasswordMatched = await isExist.comparePassword(password);
