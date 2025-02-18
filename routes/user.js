@@ -31,7 +31,6 @@ router.route("/login").post(
       return next(new CustomError(400, "UserName or Password Incorrect"));
     }
     const token = isExist.getJwtToken();
-
     return res
       .status(200)
       .json({ success: true, message: "Login successfull", token });
