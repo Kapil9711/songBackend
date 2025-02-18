@@ -16,6 +16,10 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/", router);
 
+app.get("/", (req, res) => {
+  return res.status(200).json({ success: true, message: "api is working" });
+});
+
 app.use(globalErrorHandler);
 
 const { PORT } = config;
