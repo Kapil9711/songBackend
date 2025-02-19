@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import catchAsyncErrors from "./catchAsyncError.js";
 import CustomError from "../utils/customError.js";
+import secret from "../config/secret.js";
 
 // Check if the user is authenticated or not
 export const isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
@@ -17,9 +18,8 @@ export const isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
     return next(new CustomError(401, "Login first to access this resource."));
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const decoded = jwt.verify(token, secret.JWT_SECRET);
   req.user = await User.findById(decoded.id);
-
   next();
 });
 

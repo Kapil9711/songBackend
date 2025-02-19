@@ -3,6 +3,10 @@ import catchAsyncError from "../middlewares/catchAsyncError.js";
 import User from "../models/user.js";
 import CustomError from "../utils/customError.js";
 import { isAuthenticatedUser } from "../middlewares/auth.js";
+import upload from "../config/mutlerConfig.js";
+import uploadImage from "../utils/uploadImage.js";
+const { fileTypeFromBuffer } = await import("file-type");
+
 const router = Router();
 
 router.route("/").get(isAuthenticatedUser, async (req, res, next) => {
@@ -76,6 +80,31 @@ router.route("/").put(isAuthenticatedUser, async (req, res, next) => {
     user: updatedUser,
   });
 });
+
+router.route("/image").post(
+  isAuthenticatedUser,
+  upload.single("image"),
+  catchAsyncError(async (req, res, next) => {
+    if (!req.user) return next(new CustomError(400, "User Not Found"));
+    const user = await User.findById(req.user._id);
+    if (!user) return next(new CustomError(400, "User Not Found"));
+    if (!req.file) return next(new CustomError(400, "No File Uploaded"));
+    const fileType = await fileTypeFromBuffer(req.file.buffer);
+    if (!fileType || !fileType.mime.startsWith("image/")) {
+      return next(new CustomError(400, "Please Upload an Image"));
+    }
+    const imageUrl = await uploadImage(req.file.buffer);
+    user.image = imageUrl;
+    await user.save();
+    if (!imageUrl) return next(new CustomError(500, "Image not uploaded"));
+    return res.status(201).json({
+      success: true,
+      image: imageUrl,
+      message: "Image Uploaded Successfully",
+      user,
+    });
+  })
+);
 
 router.route("/").delete(async (req, res, next) => {});
 
