@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h2>Socket.io Client</h2>
+    <input id="msg" type="text" placeholder="Enter message" />
+    <button onclick="sendMessage()">Send</button>
+    <ul id="messages"></ul>
+
+    <script>
+      const socket = io("http://localhost:8001", {
+        query: { userId: "67b5ac8760f0a993835ece96" },
+      }); // Connect to server
+
+      // Listen for messages from server
+      socket.on("message", (data) => {
+        const li = document.createElement("li");
+        li.textContent = data;
+        document.getElementById("messages").appendChild(li);
+      });
+      socket.on("friendSong", (data) => {
+        console.log(data, "recieved");
+      });
+      function sendMessage() {
+        const msg = document.getElementById("msg").value;
+        socket.emit("message", msg); // Send message to server
+      }
+    </script>
+  </body>
+</html>
