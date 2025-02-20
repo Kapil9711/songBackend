@@ -5,6 +5,7 @@ import CustomError from "../utils/customError.js";
 import { isAuthenticatedUser } from "../middlewares/auth.js";
 import upload from "../config/mutlerConfig.js";
 import uploadImage from "../utils/uploadImage.js";
+import Friend from "../models/friend.js";
 const { fileTypeFromBuffer } = await import("file-type");
 
 const router = Router();
@@ -24,8 +25,27 @@ router.route("/all").get(
     const isExist = await User.findOne({ _id: req.user.id });
     if (!isExist) return next(new CustomError(404, "User not Exists"));
 
-    const users = await User.find({});
-    res.status(200).json({ success: true, message: "User Found", users });
+    const users = await User.find({ _id: { $ne: isExist._id } });
+
+    const friends = await Friend.find(
+      {
+        $or: [{ recipient: isExist._id }, { requester: isExist._id }],
+        $or: [{ status: "accepted" }, { status: "pending" }],
+      },
+      "_id recipient requester"
+    );
+    let formatedData = [];
+    users.forEach((item) => {
+      friends.forEach((fr) => {
+        if (item._id != fr.recipient && item._id != fr.requester) {
+          formatedData.push(item);
+        }
+      });
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "User Found", users: formatedData });
   })
 );
 
