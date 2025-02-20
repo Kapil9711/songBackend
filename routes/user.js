@@ -17,6 +17,18 @@ router.route("/").get(isAuthenticatedUser, async (req, res, next) => {
     .json({ success: true, message: "User found Successfully", user });
 });
 
+router.route("/all").get(
+  isAuthenticatedUser,
+  catchAsyncError(async (req, res, next) => {
+    if (!req.user) return next(new CustomError(404, "User not Found"));
+    const isExist = await User.findOne({ _id: req.user.id });
+    if (!isExist) return next(new CustomError(404, "User not Exists"));
+
+    const users = await User.find({});
+    res.status(200).json({ success: true, message: "User Found", users });
+  })
+);
+
 // create user => /user
 router.route("/").post(
   catchAsyncError(async (req, res, next) => {

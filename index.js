@@ -6,7 +6,7 @@ import config from "./config/secret.js";
 import cors from "cors";
 import globalErrorHandler from "./middlewares/gloablErrorHandler.js";
 import router from "./routes/index.js";
-import { Server } from "socket.io";
+
 // import initializeSocket from "./socket.js";
 
 const app = express();
