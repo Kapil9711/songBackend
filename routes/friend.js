@@ -13,9 +13,10 @@ router.route("/request").get(
   catchAsyncError(async (req, res, next) => {
     const recipient = await User.findById(req.user._id);
     if (!recipient) return next(new CustomError(401, "Not Authorized"));
-    const requests = await Friend.find({ recipient, status: "pending" })
-      .populate({ path: "recipient", select: "name email image" })
-      .populate({ path: "requester", select: "name email image" });
+    const requests = await Friend.find(
+      { recipient, status: "pending" },
+      "_id requester"
+    ).populate({ path: "requester", select: "name email image" });
     return res.status(200).json({ success: true, friendRequests: requests });
   })
 );
@@ -26,12 +27,33 @@ router.route("/").get(
   catchAsyncError(async (req, res, next) => {
     const user = await User.findById(req.user._id);
     if (!user) return next(new CustomError(401, "Not Authorized"));
-    const friends = await Friend.find({
-      $or: [{ recipient: user }, { requester: user }],
-      status: "accepted",
-    })
-      .populate({ path: "recipient", select: "name email image" })
-      .populate({ path: "requester", select: "name email image" });
+    const friends = await Friend.find(
+      {
+        $or: [{ recipient: user._id }, { requester: user._id }],
+        status: "accepted",
+      },
+      "_id recipient requester"
+    );
+    const friendId = friends.map((item) => {
+      if (item.requester !== user.id) return { _id: item.requester };
+      if (item.recipient !== user.id) return { _id: item.recipient };
+    });
+    const allFriends = await User.find(
+      {
+        $or: friendId,
+      },
+      "_id name email image"
+    );
+    let formatedData = friends.map((item, idx) => {
+      let fr = allFriends[idx];
+      return { _id: item.id, user: fr };
+    });
+    // const friends = await Friend.find({
+    //   $or: [{ recipient: user }, { requester: user }],
+    //   status: "accepted",
+    // })
+    //   .populate({ path: "recipient", select: "name email image" })
+    //   .populate({ path: "requester", select: "name email image" });
 
     // const friends = await Friend.aggregate([
     //   {
@@ -80,7 +102,7 @@ router.route("/").get(
     //   //     },
     //   //   },
     // ]);
-    return res.status(200).json({ success: true, friends });
+    return res.status(200).json({ success: true, friends: formatedData });
   })
 );
 
