@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
   },
   isFavouritePublic: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   image: {
     type: String,
