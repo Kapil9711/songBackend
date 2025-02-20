@@ -5,6 +5,7 @@ import mongoose, { isValidObjectId } from "mongoose";
 import CustomError from "../utils/customError.js";
 import User from "../models/user.js";
 import { isAuthenticatedUser } from "../middlewares/auth.js";
+import Favorite from "../models/favorite.js";
 const router = Router();
 
 // get friend requests => /friend/request
@@ -42,10 +43,23 @@ router.route("/").get(
       {
         $or: friendId,
       },
-      "_id name email image"
-    );
+      "_id name email image isFavouritePublic"
+    ).lean();
+    let final = [];
+    for (let i = 0; i < allFriends.length; i++) {
+      let fr = allFriends[0];
+      if (fr.isFavouritePublic) {
+        const favorite = await Favorite.find({ userId: fr._id });
+        final.push({ ...fr, favorite });
+      } else {
+        final.push({ ...fr, favorite: [] });
+      }
+    }
+
+    console.log(final, "final");
+
     let formatedData = friends.map((item, idx) => {
-      let fr = allFriends[idx];
+      let fr = final[idx];
       return { _id: item.id, user: fr };
     });
     // const friends = await Friend.find({

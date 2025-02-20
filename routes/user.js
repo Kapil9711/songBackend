@@ -26,6 +26,7 @@ router.route("/all").get(
     if (!isExist) return next(new CustomError(404, "User not Exists"));
 
     const users = await User.find({ _id: { $ne: isExist._id } });
+    console.log(users);
 
     const friends = await Friend.find(
       {
@@ -35,17 +36,27 @@ router.route("/all").get(
       "_id recipient requester"
     );
     let formatedData = [];
+
     users.forEach((item) => {
-      friends.forEach((fr) => {
-        if (item._id != fr.recipient && item._id != fr.requester) {
-          formatedData.push(item);
-        }
+      let st = false;
+      friends.some((fr) => {
+        console.log(item, fr);
+        if (
+          String(item._id) == String(fr.recipient) ||
+          String(item._id) == String(fr.requester)
+        ) {
+          st = true;
+          return true;
+        } else return false;
       });
+      if (!st) formatedData.push(item);
     });
 
-    res
-      .status(200)
-      .json({ success: true, message: "User Found", users: formatedData });
+    res.status(200).json({
+      success: true,
+      message: "User Found",
+      users: friends.length > 0 ? formatedData : users,
+    });
   })
 );
 
