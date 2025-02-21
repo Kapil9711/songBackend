@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password is required."], // Custom error message for password
-    minlength: [10, "Password must be at least 10 characters long."], // Custom error message for password length
+    minlength: [5, "Password must be at least 10 characters long."], // Custom error message for password length
   },
   songQuality: {
     type: Number,

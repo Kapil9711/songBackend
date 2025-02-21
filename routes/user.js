@@ -26,7 +26,6 @@ router.route("/all").get(
     if (!isExist) return next(new CustomError(404, "User not Exists"));
 
     const users = await User.find({ _id: { $ne: isExist._id } });
-    console.log(users);
 
     const friends = await Friend.find(
       {
@@ -64,9 +63,12 @@ router.route("/all").get(
 router.route("/").post(
   catchAsyncError(async (req, res, next) => {
     const { name, email, password } = req.body;
+    console.log(req.body);
     const isExist = await User.findOne({ email });
+    console.log(isExist);
     if (isExist) return next(new CustomError(400, "User Already Exist"));
-    const user = await User.create(req.body);
+    const user = await User.create({ name, email, password });
+    console.log(user);
     res.status(201).json({ success: true, user });
   })
 );

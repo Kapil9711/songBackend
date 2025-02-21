@@ -35,9 +35,12 @@ router.route("/").get(
       },
       "_id recipient requester"
     );
+    console.log(friends);
     const friendId = friends.map((item) => {
-      if (item.requester !== user.id) return { _id: item.requester };
-      if (item.recipient !== user.id) return { _id: item.recipient };
+      if (String(item.requester) !== String(user._id))
+        return { _id: item.requester };
+      if (String(item.recipient) !== String(user.id))
+        return { _id: item.recipient };
     });
     const allFriends = await User.find(
       {
@@ -56,7 +59,7 @@ router.route("/").get(
       }
     }
 
-    console.log(final, "final");
+    console.log(user, final, "final");
 
     let formatedData = friends.map((item, idx) => {
       let fr = final[idx];

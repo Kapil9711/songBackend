@@ -8,31 +8,32 @@ const router = Router();
 // get formated home-page data => song/home-page
 router.route("/home-page").get(
   catchAsyncError(async (req, res, next) => {
-    const haryanviViralPlaylistId = "171187849";
+    const haryanviViralPlaylistId = "1134770917";
     const punjabiHitsPlaylistId = "1134543511";
     const hindiHitsPlaylistId = "1134543272";
     let haryanviUrl = `${secret.JIO_BASE_URL}/playlists?id=${haryanviViralPlaylistId}&&limit=100`;
     let hindiUrl = `${secret.JIO_BASE_URL}/playlists?id=${hindiHitsPlaylistId}&&limit=100`;
     let punjabiUrl = `${secret.JIO_BASE_URL}/playlists?id=${punjabiHitsPlaylistId}&&limit=100`;
+
     const haryavniPromise = axios.get(haryanviUrl);
     const hindiPromise = axios.get(hindiUrl);
     const punjabiPromise = axios.get(punjabiUrl);
 
-    // try {
-    //   const cacheData = myCache.get("trendings");
-    //   if (cacheData) {
-    //     const { haryanvi, punjabi, hindi } = JSON.parse(cacheData);
-    //     return res.status(200).json({
-    //       success: true,
-    //       message: "Home page Data",
-    //       hindi,
-    //       haryanvi,
-    //       punjabi,
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const cacheData = myCache.get("trendings");
+      if (cacheData) {
+        const { haryanvi, punjabi, hindi } = JSON.parse(cacheData);
+        return res.status(200).json({
+          success: true,
+          message: "Home page Data",
+          hindi,
+          haryanvi,
+          punjabi,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     const [haryanviData, hindiData, punjabiData] = await Promise.allSettled([
       haryavniPromise,
@@ -56,12 +57,12 @@ router.route("/home-page").get(
       punjabi = songs;
     }
 
-    // let trendings = { haryanvi, hindi, punjabi };
-    // try {
-    //   myCache.set("trendings", JSON.stringify(trendings));
-    // } catch (error) {
-    //   console.log("error", error);
-    // }
+    let trendings = { haryanvi, hindi, punjabi };
+    try {
+      myCache.set("trendings", JSON.stringify(trendings));
+    } catch (error) {
+      console.log("error", error);
+    }
 
     res.status(200).json({
       success: true,

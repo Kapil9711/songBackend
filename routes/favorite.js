@@ -49,6 +49,7 @@ router.route("/").post(
 
     if (isExist) {
       await Favorite.findOneAndDelete({ id });
+      console.log(name, "removed");
       return res
         .status(200)
         .json({ success: true, message: "Favorite Removed successfully" });
@@ -61,6 +62,7 @@ router.route("/").post(
       id,
       userId: user._id,
     });
+    console.log(name, "added");
 
     res.status(201).json({
       success: true,
