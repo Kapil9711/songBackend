@@ -35,22 +35,24 @@ router.route("/").get(
       },
       "_id recipient requester"
     );
-    console.log(friends);
+
     const friendId = friends.map((item) => {
       if (String(item.requester) !== String(user._id))
         return { _id: item.requester };
       if (String(item.recipient) !== String(user.id))
         return { _id: item.recipient };
     });
+
     const allFriends = await User.find(
       {
         $or: friendId,
       },
       "_id name email image isFavouritePublic"
     ).lean();
+
     let final = [];
     for (let i = 0; i < allFriends.length; i++) {
-      let fr = allFriends[0];
+      let fr = allFriends[i];
       if (fr.isFavouritePublic) {
         const favorite = await Favorite.find({ userId: fr._id });
         final.push({ ...fr, favorite });
@@ -59,66 +61,11 @@ router.route("/").get(
       }
     }
 
-    console.log(user, final, "final");
-
     let formatedData = friends.map((item, idx) => {
       let fr = final[idx];
       return { _id: item.id, user: fr };
     });
-    // const friends = await Friend.find({
-    //   $or: [{ recipient: user }, { requester: user }],
-    //   status: "accepted",
-    // })
-    //   .populate({ path: "recipient", select: "name email image" })
-    //   .populate({ path: "requester", select: "name email image" });
 
-    // const friends = await Friend.aggregate([
-    //   {
-    //     $match: {
-    //       $or: [{ recipient: user }, { requester: user }],
-    //       status: "accepted",
-    //     },
-    //   },
-    //   //   {
-    //   //     $lookup: {
-    //   //       from: "users",
-    //   //       localField: "recipient",
-    //   //       foreignField: "_id",
-    //   //       as: "recipientDetails",
-    //   //     },
-    //   //   },
-    //   //   {
-    //   //     $unwind: {
-    //   //       path: "$recipientDetails",
-    //   //       preserveNullAndEmptyArrays: true,
-    //   //     },
-    //   //   },
-    //   //   {
-    //   //     $lookup: {
-    //   //       from: "users",
-    //   //       localField: "requester",
-    //   //       foreignField: "_id",
-    //   //       as: "requesterDetails",
-    //   //     },
-    //   //   },
-    //   //   {
-    //   //     $unwind: {
-    //   //       path: "$requesterDetails",
-    //   //       preserveNullAndEmptyArrays: true,
-    //   //     },
-    //   //   },
-    //   //   {
-    //   //     $project: {
-    //   //       status: 1,
-    //   //       "recipientDetails.name": 1,
-    //   //       "recipientDetails.email": 1,
-    //   //       "recipientDetails.image": 1,
-    //   //       "requesterDetails.name": 1,
-    //   //       "requesterDetails.email": 1,
-    //   //       "requesterDetails.image": 1,
-    //   //     },
-    //   //   },
-    // ]);
     return res.status(200).json({ success: true, friends: formatedData });
   })
 );
