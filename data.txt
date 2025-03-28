@@ -1,0 +1,40 @@
+// "song":{
+//         "id": "wpR-ex-4",
+//         "name": "Believer",
+//         "image": [
+//           {
+//             "quality": "50x50",
+//             "url": "https://c.saavncdn.com/941/Believer-Instrumental-2021-20210603172133-50x50.jpg"
+//           },
+//           {
+//             "quality": "150x150",
+//             "url": "https://c.saavncdn.com/941/Believer-Instrumental-2021-20210603172133-150x150.jpg"
+//           },
+//           {
+//             "quality": "500x500",
+//             "url": "https://c.saavncdn.com/941/Believer-Instrumental-2021-20210603172133-500x500.jpg"
+//           }
+//         ],
+//         "downloadUrl": [
+//           {
+//             "quality": "12kbps",
+//             "url": "https://aac.saavncdn.com/941/9e76434ac57a6d7093cf508ab4199270_12.mp4"
+//           },
+//           {
+//             "quality": "48kbps",
+//             "url": "https://aac.saavncdn.com/941/9e76434ac57a6d7093cf508ab4199270_48.mp4"
+//           },
+//           {
+//             "quality": "96kbps",
+//             "url": "https://aac.saavncdn.com/941/9e76434ac57a6d7093cf508ab4199270_96.mp4"
+//           },
+//           {
+//             "quality": "160kbps",
+//             "url": "https://aac.saavncdn.com/941/9e76434ac57a6d7093cf508ab4199270_160.mp4"
+//           },
+//           {
+//             "quality": "320kbps",
+//             "url": "https://aac.saavncdn.com/941/9e76434ac57a6d7093cf508ab4199270_320.mp4"
+//           }
+//         ]
+// }
